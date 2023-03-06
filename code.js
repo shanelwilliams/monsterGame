@@ -13,12 +13,12 @@ window.addEventListener('load', function() {
 			this.game = game
 			this.collisionX = this.game.width * 0.5
 			this.collisionY = this.game.height * 0.5
-			this.collisionRadius = 30
+			this.collisionRadius = 50
 			this.speedX = 0
 			this.speedY = 0
 			this.dx = 0 //horizontal distance
 			this.dy = 0 //vertical distance
-			this.speedModifier = 20
+			this.speedModifier = 5
 		}
 		draw(context) {
 			context.beginPath()
@@ -51,8 +51,14 @@ window.addEventListener('load', function() {
 
 			//collision with obstacles
 			this.game.obstacles.forEach(obstacle => {
-				if(this.game.checkCollision(this, obstacle)) {
-					console.log('collision')
+				// [(distance < sumOfRadius), distance, sumOfRadius, dx, dy]
+				// This formula makes it so player can't collide with obstacles
+				let [collision, distance, sumOfRadius, dx, dy] = this.game.checkCollision(this, obstacle)
+				if(collision) {
+					const unit_x = dx / distance
+					const unit_y = dy / distance
+					this.collisionX = obstacle.collisionX + (sumOfRadius + 1) * unit_x
+					this.collisionY = obstacle.collisionY + (sumOfRadius + 1) *unit_y
 				}
 			})
 		}
@@ -119,16 +125,16 @@ window.addEventListener('load', function() {
 			})
 		}
 		render(context) {
+			this.obstacles.forEach(obstacle => obstacle.draw(context))
 			this.player.draw(context)
 			this.player.update()
-			this.obstacles.forEach(obstacle => obstacle.draw(context))
 		}
 		checkCollision(a, b) {
 			const dx = a.collisionX - b.collisionX
 			const dy = a.collisionY - b.collisionY
 			const distance = Math.hypot(dy, dx)
 			const sumOfRadius = a.collisionRadius + b.collisionRadius
-			return (distance < sumOfRadius)
+			return [(distance < sumOfRadius), distance, sumOfRadius, dx, dy]
 		}
 		init() {
 			let attempts = 0

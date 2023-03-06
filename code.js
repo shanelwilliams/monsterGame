@@ -18,9 +18,19 @@ window.addEventListener('load', function() {
 			this.speedY = 0
 			this.dx = 0 //horizontal distance
 			this.dy = 0 //vertical distance
-			this.speedModifier = 5
+			this.speedModifier = 3
+			this.spriteWidth = 255
+			this.spriteHeight = 255
+			this. width = this.spriteWidth
+			this.height = this.spriteHeight
+			this.spriteX
+			this.spriteY
+			this.frameX = 0
+			this.frameY = 0
+			this.image = document.getElementById('bull')
 		}
 		draw(context) {
+			context.drawImage(this.image, this.frameX * this.spriteWidth, this.frameY * this.spriteWidth, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height)
 			context.beginPath()
 			context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)
 			context.save()  //snapshot of current canvas state
@@ -37,6 +47,30 @@ window.addEventListener('load', function() {
 		update() {
 			this.dx = this.game.mouse.x - this.collisionX
 			this.dy = this.game.mouse.y - this.collisionY
+			//sprite animation
+			const angle = Math.atan2(this.dy, this.dx)
+			if(angle < -2.74 || angle > 2.74) {
+				this.frameY = 6
+			} else if(angle < -1.96) {
+				this.frameY = 7
+			} else if(angle < -1.17) {
+				this.frameY = 0
+			} else if(angle < -0.39) {
+				this.frameY = 1
+			} else if(angle < 0.39) {
+				this.frameY = 2
+			} else if(angle < 1.17) {
+				this.frameY = 3
+			} else if(angle < 1.96) {
+				this.frameY = 4
+			} else if(angle < 2.74) {
+				this.frameY = 5
+			} else if(angle < -2.74 || angle > 2.74) {
+				this.frameY = 6
+			} else if(angle < -1.96) {
+				this.frameY = 7
+			}
+
 			const distance = Math.hypot(this.dy, this.dx)  //distance between dy & dx (hypotenuse)
 			if(distance > this.speedModifier) {
 				this.speedX = this.dx / distance || 0
@@ -48,6 +82,8 @@ window.addEventListener('load', function() {
 
 			this.collisionX += this.speedX * this.speedModifier
 			this.collisionY += this.speedY * this.speedModifier
+			this.spriteX = this.collisionX - this.width * 0.5
+			this.spriteY = this.collisionY - this.height * 0.5 - 100
 
 			//collision with obstacles
 			this.game.obstacles.forEach(obstacle => {

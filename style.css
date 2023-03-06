@@ -20,6 +20,6 @@
 	pointer-events: none;  /* make sure it doesn't interfere with mouse events on canvas */
 }
 
-#obstacles {
+#obstacles, #bull {
 	display: none;
 }

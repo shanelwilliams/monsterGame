@@ -104,16 +104,16 @@ window.addEventListener('load', function () {
 			this.spriteY = this.collisionY - this.height * 0.5 - 85
 
 			// horizontal boundaries
-			if(this.collisionX < this.collisionRadius) {
+			if (this.collisionX < this.collisionRadius) {
 				this.collisionX = this.collisionRadius
-			} else if(this.collisionX > this.game.width - this.collisionRadius) {
+			} else if (this.collisionX > this.game.width - this.collisionRadius) {
 				this.collisionX = this.game.width - this.collisionRadius
 			}
 
 			//vertical boundaries
-			if(this.collisionY < this.game.topMargin + this.collisionRadius) {
+			if (this.collisionY < this.game.topMargin + this.collisionRadius) {
 				this.collisionY = this.game.topMargin + this.collisionRadius
-			} else if(this.collisionY > this.game.height - this.collisionRadius) {
+			} else if (this.collisionY > this.game.height - this.collisionRadius) {
 				this.collisionY = this.game.height - this.collisionRadius
 			}
 
@@ -186,6 +186,9 @@ window.addEventListener('load', function () {
 			this.topMargin = 260
 			this.debug = true
 			this.player = new Player(this)
+			this.fps = 70  // frames per second
+			this.timer = 0
+			this.interval = 1000 / this.fps
 			this.numOfObstacles = 5
 			this.obstacles = []
 			this.mouse = {
@@ -218,10 +221,16 @@ window.addEventListener('load', function () {
 				}
 			})
 		}
-		render(context) {
-			this.obstacles.forEach((obstacle) => obstacle.draw(context))
-			this.player.draw(context)
-			this.player.update()
+		render(context, deltaTime) {
+			if (this.timer > this.interval) {
+				ctx.clearRect(0, 0, this.width, this.height)
+				//animate next frame
+				this.obstacles.forEach((obstacle) => obstacle.draw(context))
+				this.player.draw(context)
+				this.player.update()
+				this.timer = 0
+			}
+			this.timer += deltaTime
 		}
 		checkCollision(a, b) {
 			const dx = a.collisionX - b.collisionX
@@ -268,10 +277,13 @@ window.addEventListener('load', function () {
 	game.init()
 	console.log(game)
 
-	function animate() {
-		ctx.clearRect(0, 0, canvas.width, canvas.height)
-		game.render(ctx)
+	let lastTime = 0
+
+	function animate(timeStamp) {
+		const deltaTime = timeStamp - lastTime
+		lastTime = timeStamp
+		game.render(ctx, deltaTime)
 		requestAnimationFrame(animate)
 	}
-	animate()
+	animate(0)
 })

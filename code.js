@@ -7,6 +7,8 @@ window.addEventListener('load', function () {
 	ctx.fillStyle = 'white'
 	ctx.lineWidth = 3
 	ctx.strokeStyle = 'white'
+	ctx.font = '40px Helvetica'
+	ctx.textAlign = 'center'
 
 	class Player {
 		constructor(game) {
@@ -198,16 +200,92 @@ window.addEventListener('load', function () {
 			this.height = this.spriteHeight
 			this.spriteX
 			this.spriteY
+			this.hatchTimer = 0
+			this.hatchInterval = 3000
+			this.markedForDeletion = false
 		}
 
 		draw(context) {
 			context.drawImage(
 				this.image,
 				this.spriteX,
-				this.spriteY,
-				this.width,
-				this.height
+				this.spriteY
 			)
+			if (this.game.debug) {
+				context.beginPath()
+				context.arc(
+					this.collisionX,
+					this.collisionY,
+					this.collisionRadius,
+					0,
+					Math.PI * 2
+				)
+				context.save() //snapshot of current canvas state
+				context.globalAlpha = 0.5 //opacity
+				context.fill() //fils the circle
+				context.restore() //restore to current state later
+				context.stroke() //outline
+				const displayTimer = (this.hatchTimer * 0.001).toFixed(0)
+				context.fillText(
+					displayTimer,
+					this.collisionX,
+					this.collisionY - this.collisionRadius * 2.5
+				)
+			}
+		}
+
+		update(deltaTime) {
+			this.spriteX = this.collisionX - this.width * 0.5
+			this.spriteY = this.collisionY - this.width * 0.5 - 30
+			// collisions
+			let collisionObjects = [
+				this.game.player,
+				...this.game.obstacles,
+				...this.game.enemies,
+			]
+			collisionObjects.forEach((object) => {
+				let [collision, distance, sumOfRadius, dx, dy] =
+					this.game.checkCollision(this, object)
+				if (collision) {
+					const unit_x = dx / distance
+					const unit_y = dy / distance
+					this.collisionX = object.collisionX + (sumOfRadius + 1) * unit_x
+					this.collisionY = object.collisionY + (sumOfRadius + 1) * unit_y
+					this.image = document.getElementById('larva')
+					this.spriteWidth = 150
+					this.spriteHeight = 150
+				}
+			})
+			// hatching
+			if (this.hatchTimer > this.hatchInterval) {
+				this.game.hatchlings.push(new Larva(this.game, this.collisionX, this.collisionY))
+				this.markedForDeletion = true
+				this.game.removeGameObjects()
+			} else {
+				this.hatchTimer += deltaTime
+			}
+		}
+	}
+
+	class Larva {
+		constructor(game, x, y) {
+			this.game = game
+			this.collisionX = x
+			this.collisionY = y
+			this.collisionRadius = 30
+			this.image = document.getElementById('larva')
+			this.spriteWidth = 150
+			this.spriteHeight = 150
+			this.width = this.spriteWidth
+			this.height = this.spriteHeight
+			this.spriteX
+			this.spriteY
+			this.speedY = 1 + Math.random()
+			this.frameY = Math.floor(Math.random() * 2)
+			this.frameX = 0
+		}
+		draw(context) {
+			context.drawImage(this.image, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height)
 			if (this.game.debug) {
 				context.beginPath()
 				context.arc(
@@ -224,11 +302,21 @@ window.addEventListener('load', function () {
 				context.stroke() //outline
 			}
 		}
-
 		update() {
+			this.collisionY -= this.speedY
 			this.spriteX = this.collisionX - this.width * 0.5
-			this.spriteY = this.collisionY - this.width * 0.5 - 30
-			let collisionObjects = [this.game.player, ...this.game.obstacles, ...this.game.enemies]
+			this.spriteY = this.collisionY - this.height * 0.5 - 50
+			// move to safety
+			if(this.collisionY < this.game.topMargin) {
+				this.markedForDeletion = true
+				this.game.removeGameObjects()
+				this.game.score += 1
+			}
+			// collisions with objects
+			let collisionObjects = [
+				this.game.player,
+				...this.game.obstacles
+			]
 			collisionObjects.forEach((object) => {
 				let [collision, distance, sumOfRadius, dx, dy] =
 					this.game.checkCollision(this, object)
@@ -242,28 +330,14 @@ window.addEventListener('load', function () {
 					this.spriteHeight = 150
 				}
 			})
-		}
-	}
-
-	class Larva {
-		constructor(game, x, y) {
-			this.game = game
-			this.collisionX = x
-			this.collisionY = y
-			this.collisionRadius = 30
-			this.width = this.spriteWidth
-			this.height = this.spriteHeight
-			this.spriteX
-			this.spriteY
-			this.speedY = 1 + Math.random()
-		}
-		draw(context) {
-			context.drawImage(this.image, this.spriteX, this.spriteY)
-		}
-		update() {
-			this.collisionY -= this.speedY
-			this.spriteX = this.collisionX - this.width * 0.5
-			this.spriteY = this.collisionY - this.height * 0.5
+			// collisions with enemies
+			this.game.enemies.forEach(enemy => {
+				if(this.game.checkCollision(this, enemy)[0]) {
+					this.markedForDeletion = true
+					this.game.removeGameObjects()
+					this.game.lostHatchlings += 1
+				}
+			})
 		}
 	}
 
@@ -278,7 +352,9 @@ window.addEventListener('load', function () {
 			this.width = this.spriteWidth
 			this.height = this.spriteHeight
 			this.collisionX = this.game.width
-			this.collisionY = this.game.topMargin + (Math.random() * (this.game.height - this.game.topMargin))
+			this.collisionY =
+				this.game.topMargin +
+				Math.random() * (this.game.height - this.game.topMargin)
 			this.spriteX
 			this.spriteY
 		}
@@ -305,8 +381,11 @@ window.addEventListener('load', function () {
 			this.spriteY = this.collisionY - this.height + 40
 			this.collisionX -= this.speedX
 			if (this.spriteX + this.width < 0) {
-				this.collisionX = this.game.width + Math.random() * this.game.width * 0.5
-				this.collisionY = this.game.topMargin + (Math.random() * (this.game.height - this.game.topMargin))
+				this.collisionX =
+					this.game.width + Math.random() * this.game.width * 0.5
+				this.collisionY =
+					this.game.topMargin +
+					Math.random() * (this.game.height - this.game.topMargin)
 			}
 			let collisionObjects = [this.game.player, ...this.game.obstacles]
 			collisionObjects.forEach((object) => {
@@ -335,11 +414,14 @@ window.addEventListener('load', function () {
 			this.eggTimer = 0
 			this.eggInterval = 100
 			this.numOfObstacles = 5
-			this.maxEggs = 20
+			this.maxEggs = 4
 			this.obstacles = []
 			this.eggs = []
 			this.enemies = []
+			this.hatchlings = []
 			this.gameObjects = []
+			this.score = 0
+			this.lostHatchlings = 0
 			this.mouse = {
 				x: this.width * 0.5,
 				y: this.height * 0.5,
@@ -373,7 +455,13 @@ window.addEventListener('load', function () {
 		render(context, deltaTime) {
 			if (this.timer > this.interval) {
 				ctx.clearRect(0, 0, this.width, this.height)
-				this.gameObjects = [this.player, ...this.eggs, ...this.obstacles, ...this.enemies]
+				this.gameObjects = [
+					this.player,
+					...this.eggs,
+					...this.obstacles,
+					...this.enemies,
+					...this.hatchlings
+				]
 				//sort by vertical position
 				this.gameObjects.sort((a, b) => {
 					return a.collisionY - b.collisionY
@@ -381,7 +469,7 @@ window.addEventListener('load', function () {
 				//animate next frame
 				this.gameObjects.forEach((object) => {
 					object.draw(context)
-					object.update()
+					object.update(deltaTime)
 				})
 
 				this.timer = 0
@@ -392,10 +480,17 @@ window.addEventListener('load', function () {
 			if (this.eggTimer > this.eggInterval && this.eggs.length < this.maxEggs) {
 				this.addEgg()
 				this.eggTimer = 0
-				console.log(this.eggs)
 			} else {
 				this.eggTimer += deltaTime
 			}
+			//draw status text
+			context.save()
+			context.textAlign = 'left'
+			context.fillText('Score: ' + this.score, 25, 50)
+			if(this.debug) {
+				context.fillText('Lost: ' + this.lostHatchlings, 25, 50)
+			}
+			context.restore()
 		}
 
 		checkCollision(a, b) {
@@ -414,8 +509,14 @@ window.addEventListener('load', function () {
 			this.enemies.push(new Enemy(this))
 		}
 
+		removeGameObjects() {
+			this.eggs = this.eggs.filter((object) => !object.markedForDeletion)
+			this.hatchlings = this.hatchlings.filter((object) => !object.markedForDeletion)
+			console.log(this.gameObjects)
+		}
+
 		init() {
-			for(let i = 0; i < 3; i += 1) {
+			for (let i = 0; i < 3; i += 1) {
 				this.addEnemy()
 			}
 			let attempts = 0

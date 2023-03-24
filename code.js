@@ -197,7 +197,7 @@ window.addEventListener('load', function () {
 			this.spriteX 
 			this.spriteY 
 			this.hatchTimer = 0
-			this.hatchInterval = 5000
+			this.hatchInterval = 10000
 			this.markedForDeletion = false
 		}
 
@@ -234,7 +234,7 @@ window.addEventListener('load', function () {
 				}
 			})
 			// hatching
-			if (this.hatchTimer > this.hatchInterval) {
+			if (this.hatchTimer > this.hatchInterval || this.collisionY < this.game.topMargin) {  
 				this.game.hatchlings.push(new Larva(this.game, this.collisionX, this.collisionY))
 				this.markedForDeletion = true
 				this.game.removeGameObjects()
@@ -308,6 +308,9 @@ window.addEventListener('load', function () {
 					this.markedForDeletion = true
 					this.game.removeGameObjects()
 					this.game.lostHatchlings += 1
+					for(let i = 0; i < 5; i += 1) {
+						this.game.particles.push(new Spark(this.game, this.collisionX, this.collisionY, 'red'))
+					}
 				}
 			})
 		}
@@ -318,7 +321,7 @@ window.addEventListener('load', function () {
 			this.game = game
 			this.collisionRadius = 30
 			this.speedX = Math.random() * 3 + 0.5
-			this.image = document.getElementById('toad')
+			this.image = document.getElementById('toads')
 			this.spriteWidth = 140
 			this.spriteHeight = 260
 			this.width = this.spriteWidth
@@ -327,9 +330,11 @@ window.addEventListener('load', function () {
 			this.collisionY = this.game.topMargin + Math.random() * (this.game.height - this.game.topMargin)
 			this.spriteX
 			this.spriteY
+			this.frameX = 0
+			this.frameY = Math.floor(Math.random() * 4)
 		}
 		draw(context) {
-			context.drawImage(this.image, this.spriteX, this.spriteY)
+			context.drawImage(this.image, this.frameX, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height)
 			if (this.game.debug) {
 				context.beginPath()
 				context.arc(this.collisionX, this.collisionY,this.collisionRadius, 0, Math.PI * 2)
@@ -347,6 +352,7 @@ window.addEventListener('load', function () {
 			if (this.spriteX + this.width < 0) {
 				this.collisionX = this.game.width + Math.random() * this.game.width * 0.5
 				this.collisionY = this.game.topMargin + Math.random() * (this.game.height - this.game.topMargin)
+				this.frameY = Math.floor(Math.random() * 4)
 			}
 			let collisionObjects = [this.game.player, ...this.game.obstacles]
 			collisionObjects.forEach((object) => {
@@ -388,7 +394,7 @@ window.addEventListener('load', function () {
 	class Firefly extends Particle {
 		update() {
 			this.angle += this.va
-			this.collisionX += this.speedX
+			this.collisionX += Math.cos(this.angle) * this.speedX
 			this.collisionY -= this.speedY
 			if (this.collisionY < 0 - this.radius) {
 				this.markedForDeletion = true
@@ -398,7 +404,17 @@ window.addEventListener('load', function () {
 	}
 
 	class Spark extends Particle {
-		update() {}
+		update() {
+			this.angle += this.va * 0.5
+			this.collisionX -= Math.cos(this.angle) * this.speedX
+			this.collisionY -= Math.sin(this.angle) * this.speedY
+			if(this.radius > 0.1) {
+				this.radius -= 0.5
+			} if(this.radius < 0.2) {
+				this.markedForDeletion = true
+				this.game.removeGameObjects()
+			}
+		}
 	}
 	class Game {
 		constructor(canvas) {

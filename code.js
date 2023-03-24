@@ -52,12 +52,12 @@ window.addEventListener('load', function () {
 					0,
 					Math.PI * 2
 				)
-				context.save() //snapshot of current canvas state
+				context.save() //current canvas state
 				context.globalAlpha = 0.5 //opacity
 				context.fill() //fils the circle
-				context.restore() //restore to current state later
+				context.restore() //restore current state 
 				context.stroke() //outline
-				context.beginPath() //creates two paths, each contains single line
+				context.beginPath() //creates two paths
 				context.moveTo(this.collisionX, this.collisionY) //starting x y coords of line
 				context.lineTo(this.game.mouse.x, this.game.mouse.y) //ending x y coords of line
 				context.stroke() //draws the line
@@ -187,21 +187,17 @@ window.addEventListener('load', function () {
 			this.game = game
 			this.collisionRadius = 40
 			this.margin = this.collisionRadius * 2
-			this.collisionX =
-				this.margin + Math.random() * (this.game.width - this.margin * 2)
-			this.collisionY =
-				this.game.topMargin +
-				Math.random() * (this.game.height - this.game.topMargin - this.margin)
-			this.collisionRadius = 40
+			this.collisionX = this.margin + (Math.random() * (this.game.width - this.margin * 2))
+			this.collisionY = this.game.topMargin + (Math.random() * (this.game.height - this.game.topMargin - this.margin))
 			this.image = document.getElementById('egg')
 			this.spriteWidth = 110
 			this.spriteHeight = 135
 			this.width = this.spriteWidth
 			this.height = this.spriteHeight
-			this.spriteX
-			this.spriteY
+			this.spriteX 
+			this.spriteY 
 			this.hatchTimer = 0
-			this.hatchInterval = 3000
+			this.hatchInterval = 5000
 			this.markedForDeletion = false
 		}
 
@@ -209,24 +205,14 @@ window.addEventListener('load', function () {
 			context.drawImage(this.image, this.spriteX, this.spriteY)
 			if (this.game.debug) {
 				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //snapshot of current canvas state
+				context.arc(this.collisionX, this.collisionY,this.collisionRadius, 0, Math.PI * 2)
+				context.save() //current canvas state
 				context.globalAlpha = 0.5 //opacity
 				context.fill() //fils the circle
-				context.restore() //restore to current state later
+				context.restore() //restore current state 
 				context.stroke() //outline
 				const displayTimer = (this.hatchTimer * 0.001).toFixed(0)
-				context.fillText(
-					displayTimer,
-					this.collisionX,
-					this.collisionY - this.collisionRadius * 2.5
-				)
+				context.fillText(displayTimer, this.collisionX, this.collisionY - this.collisionRadius * 2.5)
 			}
 		}
 
@@ -234,14 +220,9 @@ window.addEventListener('load', function () {
 			this.spriteX = this.collisionX - this.width * 0.5
 			this.spriteY = this.collisionY - this.width * 0.5 - 30
 			// collisions
-			let collisionObjects = [
-				this.game.player,
-				...this.game.obstacles,
-				...this.game.enemies,
-			]
+			let collisionObjects = [this.game.player, ...this.game.obstacles, ...this.game.enemies]
 			collisionObjects.forEach((object) => {
-				let [collision, distance, sumOfRadius, dx, dy] =
-					this.game.checkCollision(this, object)
+				let [collision, distance, sumOfRadius, dx, dy] = this.game.checkCollision(this, object)
 				if (collision) {
 					const unit_x = dx / distance
 					const unit_y = dy / distance
@@ -254,9 +235,7 @@ window.addEventListener('load', function () {
 			})
 			// hatching
 			if (this.hatchTimer > this.hatchInterval) {
-				this.game.hatchlings.push(
-					new Larva(this.game, this.collisionX, this.collisionY)
-				)
+				this.game.hatchlings.push(new Larva(this.game, this.collisionX, this.collisionY))
 				this.markedForDeletion = true
 				this.game.removeGameObjects()
 			} else {
@@ -279,34 +258,18 @@ window.addEventListener('load', function () {
 			this.spriteX
 			this.spriteY
 			this.speedY = 1 + Math.random()
-			this.frameY = Math.floor(Math.random() * 2)
 			this.frameX = 0
+			this.frameY = Math.floor(Math.random() * 2)
 		}
 		draw(context) {
-			context.drawImage(
-				this.image,
-				this.frameX * this.spriteWidth,
-				this.frameY * this.spriteHeight,
-				this.spriteWidth,
-				this.spriteHeight,
-				this.spriteX,
-				this.spriteY,
-				this.width,
-				this.height
-			)
+			context.drawImage(this.image, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height)
 			if (this.game.debug) {
 				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //snapshot of current canvas state
+				context.arc(this.collisionX, this.collisionY,this.collisionRadius, 0, Math.PI * 2)
+				context.save() //current canvas state
 				context.globalAlpha = 0.5 //opacity
 				context.fill() //fils the circle
-				context.restore() //restore to current state later
+				context.restore() //restore to current state 
 				context.stroke() //outline
 			}
 		}
@@ -328,16 +291,15 @@ window.addEventListener('load', function () {
 			// collisions with objects
 			let collisionObjects = [this.game.player, ...this.game.obstacles]
 			collisionObjects.forEach((object) => {
-				let [collision, distance, sumOfRadius, dx, dy] =
-					this.game.checkCollision(this, object)
+				let [collision, distance, sumOfRadius, dx, dy] = this.game.checkCollision(this, object)
 				if (collision) {
 					const unit_x = dx / distance
 					const unit_y = dy / distance
 					this.collisionX = object.collisionX + (sumOfRadius + 1) * unit_x
 					this.collisionY = object.collisionY + (sumOfRadius + 1) * unit_y
-					this.image = document.getElementById('larva')
-					this.spriteWidth = 150
-					this.spriteHeight = 150
+					// this.image = document.getElementById('larva')
+					// this.spriteWidth = 150
+					// this.spriteHeight = 150
 				}
 			})
 			// collisions with enemies
@@ -362,9 +324,7 @@ window.addEventListener('load', function () {
 			this.width = this.spriteWidth
 			this.height = this.spriteHeight
 			this.collisionX = this.game.width
-			this.collisionY =
-				this.game.topMargin +
-				Math.random() * (this.game.height - this.game.topMargin)
+			this.collisionY = this.game.topMargin + Math.random() * (this.game.height - this.game.topMargin)
 			this.spriteX
 			this.spriteY
 		}
@@ -372,17 +332,11 @@ window.addEventListener('load', function () {
 			context.drawImage(this.image, this.spriteX, this.spriteY)
 			if (this.game.debug) {
 				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //snapshot of current canvas state
+				context.arc(this.collisionX, this.collisionY,this.collisionRadius, 0, Math.PI * 2)
+				context.save() //current canvas state
 				context.globalAlpha = 0.5 //opacity
 				context.fill() //fils the circle
-				context.restore() //restore to current state later
+				context.restore() //restore to current state 
 				context.stroke() //outline
 			}
 		}
@@ -391,16 +345,12 @@ window.addEventListener('load', function () {
 			this.spriteY = this.collisionY - this.height + 40
 			this.collisionX -= this.speedX
 			if (this.spriteX + this.width < 0) {
-				this.collisionX =
-					this.game.width + Math.random() * this.game.width * 0.5
-				this.collisionY =
-					this.game.topMargin +
-					Math.random() * (this.game.height - this.game.topMargin)
+				this.collisionX = this.game.width + Math.random() * this.game.width * 0.5
+				this.collisionY = this.game.topMargin + Math.random() * (this.game.height - this.game.topMargin)
 			}
 			let collisionObjects = [this.game.player, ...this.game.obstacles]
 			collisionObjects.forEach((object) => {
-				let [collision, distance, sumOfRadius, dx, dy] =
-					this.game.checkCollision(this, object)
+				let [collision, distance, sumOfRadius, dx, dy] = this.game.checkCollision(this, object)
 				if (collision) {
 					const unit_x = dx / distance
 					const unit_y = dy / distance
@@ -462,9 +412,9 @@ window.addEventListener('load', function () {
 			this.timer = 0
 			this.interval = 1000 / this.fps
 			this.eggTimer = 0
-			this.eggInterval = 100
+			this.eggInterval = 1000
 			this.numOfObstacles = 5
-			this.maxEggs = 4
+			this.maxEggs = 2
 			this.obstacles = []
 			this.eggs = []
 			this.enemies = []
@@ -505,15 +455,8 @@ window.addEventListener('load', function () {
 		}
 		render(context, deltaTime) {
 			if (this.timer > this.interval) {
-				ctx.clearRect(0, 0, this.width, this.height)
-				this.gameObjects = [
-					this.player,
-					...this.eggs,
-					...this.obstacles,
-					...this.enemies,
-					...this.hatchlings,
-					...this.particles,
-				]
+				context.clearRect(0, 0, this.width, this.height)
+				this.gameObjects = [this.player, ...this.eggs, ...this.obstacles, ...this.enemies, ...this.hatchlings, ...this.particles]
 				//sort by vertical position
 				this.gameObjects.sort((a, b) => {
 					return a.collisionY - b.collisionY
@@ -523,7 +466,6 @@ window.addEventListener('load', function () {
 					object.draw(context)
 					object.update(deltaTime)
 				})
-
 				this.timer = 0
 			}
 			this.timer += deltaTime
@@ -540,7 +482,7 @@ window.addEventListener('load', function () {
 			context.textAlign = 'left'
 			context.fillText('Score: ' + this.score, 25, 50)
 			if (this.debug) {
-				context.fillText('Lost: ' + this.lostHatchlings, 25, 50)
+				context.fillText('Lost: ' + this.lostHatchlings, 25, 100)
 			}
 			context.restore()
 		}
@@ -585,10 +527,7 @@ window.addEventListener('load', function () {
 					const dy = testObstacle.collisionY - obstacle.collisionY
 					const distance = Math.hypot(dy, dx)
 					const distanceBuffer = 150
-					const sumOfRadius =
-						testObstacle.collisionRadius +
-						obstacle.collisionRadius +
-						distanceBuffer
+					const sumOfRadius = testObstacle.collisionRadius + obstacle.collisionRadius + distanceBuffer
 					if (distance < sumOfRadius) {
 						overlap = true
 					}

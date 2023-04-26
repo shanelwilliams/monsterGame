@@ -51,25 +51,25 @@ window.addEventListener('load', function () {
 				this.width,
 				this.height
 			)
-			if (this.game.debug) {
-				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //current canvas state
-				context.globalAlpha = 0.5 //opacity
-				context.fill() //fills the circle
-				context.restore() //restore current state
-				context.stroke() //outline
-				context.beginPath() //creates two paths
-				context.moveTo(this.collisionX, this.collisionY) //starting x y coords of line
-				context.lineTo(this.game.mouse.x, this.game.mouse.y) //ending x y coords of line
-				context.stroke() //draws the line
-			}
+			// if (this.game.debug) {
+			// 	context.beginPath()
+			// 	context.arc(
+			// 		this.collisionX,
+			// 		this.collisionY,
+			// 		this.collisionRadius,
+			// 		0,
+			// 		Math.PI * 2
+			// 	)
+			// 	context.save() //current canvas state
+			// 	context.globalAlpha = 0.5 //opacity
+			// 	context.fill() //fills the circle
+			// 	context.restore() //restore current state
+			// 	context.stroke() //outline
+			// 	context.beginPath() //creates two paths
+			// 	context.moveTo(this.collisionX, this.collisionY) //starting x y coords of line
+			// 	context.lineTo(this.game.mouse.x, this.game.mouse.y) //ending x y coords of line
+			// 	context.stroke() //draws the line
+			// }
 		}
 
 		update() {
@@ -171,21 +171,21 @@ window.addEventListener('load', function () {
 				this.width,
 				this.height
 			)
-			if (this.game.debug) {
-				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //snapshot of current canvas state
-				context.globalAlpha = 0.5 //opacity
-				context.fill() //fills the circle
-				context.restore() //restore to current state later
-				context.stroke() //outline
-			}
+			// if (this.game.debug) {
+			// 	context.beginPath()
+			// 	context.arc(
+			// 		this.collisionX,
+			// 		this.collisionY,
+			// 		this.collisionRadius,
+			// 		0,
+			// 		Math.PI * 2
+			// 	)
+			// 	context.save() //snapshot of current canvas state
+			// 	context.globalAlpha = 0.5 //opacity
+			// 	context.fill() //fills the circle
+			// 	context.restore() //restore to current state later
+			// 	context.stroke() //outline
+			// }
 		}
 		update() {}
 	}
@@ -214,27 +214,27 @@ window.addEventListener('load', function () {
 
 		draw(context) {
 			context.drawImage(this.image, this.spriteX, this.spriteY)
-			if (this.game.debug) {
-				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //current canvas state
-				context.globalAlpha = 0.5 //opacity
-				context.fill() //fills the circle
-				context.restore() //restore current state
-				context.stroke() //outline
-				const displayTimer = (this.hatchTimer * 0.001).toFixed(0)
-				context.fillText(
-					displayTimer,
-					this.collisionX,
-					this.collisionY - this.collisionRadius * 2.5
-				)
-			}
+			// if (this.game.debug) {
+			// 	context.beginPath()
+			// 	context.arc(
+			// 		this.collisionX,
+			// 		this.collisionY,
+			// 		this.collisionRadius,
+			// 		0,
+			// 		Math.PI * 2
+			// 	)
+			// 	context.save() //current canvas state
+			// 	context.globalAlpha = 0.5 //opacity
+			// 	context.fill() //fills the circle
+			// 	context.restore() //restore current state
+			// 	context.stroke() //outline
+			// 	const displayTimer = (this.hatchTimer * 0.001).toFixed(0)
+			// 	context.fillText(
+			// 		displayTimer,
+			// 		this.collisionX,
+			// 		this.collisionY - this.collisionRadius * 2.5
+			// 	)
+			// }
 		}
 
 		update(deltaTime) {
@@ -302,21 +302,21 @@ window.addEventListener('load', function () {
 				this.width,
 				this.height
 			)
-			if (this.game.debug) {
-				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //current canvas state
-				context.globalAlpha = 0.5 //opacity
-				context.fill() //fills the circle
-				context.restore() //restore to current state
-				context.stroke() //outline
-			}
+			// if (this.game.debug) {
+			// 	context.beginPath()
+			// 	context.arc(
+			// 		this.collisionX,
+			// 		this.collisionY,
+			// 		this.collisionRadius,
+			// 		0,
+			// 		Math.PI * 2
+			// 	)
+			// 	context.save() //current canvas state
+			// 	context.globalAlpha = 0.5 //opacity
+			// 	context.fill() //fills the circle
+			// 	context.restore() //restore to current state
+			// 	context.stroke() //outline
+			// }
 		}
 		update() {
 			this.collisionY -= this.speedY
@@ -392,21 +392,21 @@ window.addEventListener('load', function () {
 				this.width,
 				this.height
 			)
-			if (this.game.debug) {
-				context.beginPath()
-				context.arc(
-					this.collisionX,
-					this.collisionY,
-					this.collisionRadius,
-					0,
-					Math.PI * 2
-				)
-				context.save() //current canvas state
-				context.globalAlpha = 0.5 //opacity
-				context.fill() //fills the circle
-				context.restore() //restore to current state
-				context.stroke() //outline
-			}
+			// if (this.game.debug) {
+			// 	context.beginPath()
+			// 	context.arc(
+			// 		this.collisionX,
+			// 		this.collisionY,
+			// 		this.collisionRadius,
+			// 		0,
+			// 		Math.PI * 2
+			// 	)
+			// 	context.save() //current canvas state
+			// 	context.globalAlpha = 0.5 //opacity
+			// 	context.fill() //fills the circle
+			// 	context.restore() //restore to current state
+			// 	context.stroke() //outline
+			// }
 		}
 		update() {
 			this.spriteX = this.collisionX - this.width * 0.5
@@ -576,9 +576,9 @@ window.addEventListener('load', function () {
 			context.save()
 			context.textAlign = 'left'
 			context.fillText('Score: ' + this.score, 25, 50)
-			if (this.debug) {
-				context.fillText('Lost: ' + this.lostHatchlings, 25, 100)
-			}
+			// if (this.debug) {
+			// 	context.fillText('Lost: ' + this.lostHatchlings, 25, 100)
+			// }
 			context.restore()
 
 			// win / lose message
